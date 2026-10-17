@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/*
+  Revories design tokens, taken from the concept images.
+  Frosted-glass panels over a sunlit terrace backdrop, Didone display serif
+  headings, soft violet for primary actions and active states, ink-black for
+  secondary calls to action, pastel chips, handwritten accents.
+*/
+/* Inline so utilities point straight at the next/font variables on <html>. */
+@theme inline {
+  --font-display: var(--font-display-serif), ui-serif, Georgia, serif;
+  --font-ui: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-caveat), cursive;
+}
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-display-serif), ui-serif, Georgia, serif;
+
+  --color-canvas: #f4f1ec;
+  --color-surface: #ffffff;
+  --color-sunken: #f3f0ec;
+  --color-field: #faf8f6;
+  --color-line: #ebe6e0;
+  --color-line-strong: #ddd6ce;
+  --color-ink: #1d1b20;
+  --color-ink-2: #4a4650;
+  --color-muted: #7a7580;
+  --color-faint: #aaa5ad;
+  --color-iconblue: #7c5cf0;
+
+  --color-accent: #7c5cf0;
+  --color-accent-2: #a184f7;
+  --color-accent-hover: #6a49e6;
+  --color-accent-soft: #eee8fe;
+  --color-accent-line: #dcd1fc;
+
+  --color-forest: #3f6b4b;
+  --color-forest-dark: #2e563a;
+  --color-forest-soft: #e7f0e8;
+
+  /* Chip families — one per metadata type so they scan at a glance */
+  --color-person: #2f63c8;
+  --color-person-soft: #e9f0fc;
+  --color-place: #7a4cc2;
+  --color-place-soft: #f2ebfb;
+  --color-event: #a3620f;
+  --color-event-soft: #fcf1df;
+  --color-tag: #2f7a55;
+  --color-tag-soft: #e6f4ec;
+  --color-year: #55606e;
+  --color-year-soft: #edf0f3;
+  --color-branch: #b23c6a;
+  --color-branch-soft: #fbe8ef;
+
+  --color-warn: #b7791f;
+  --color-warn-soft: #fdf3e1;
+  --color-danger: #c2412d;
+  --color-danger-soft: #fbeae6;
+
+  --shadow-soft: 0 1px 2px rgb(31 37 54 / 0.04), 0 2px 10px rgb(31 37 54 / 0.05);
+  --shadow-lift: 0 4px 12px rgb(31 37 54 / 0.06), 0 12px 32px rgb(31 37 54 / 0.09);
+  --shadow-pop: 0 12px 40px rgb(31 37 54 / 0.18);
+
+  --radius-card: 14px;
+}
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+}
+
+@layer base {
+  /* The Didone display face reads best a touch lighter than regular, as in the concepts. */
+  .font-display {
+    font-weight: 350;
+  }
+}
+
+@layer components {
+  /* Frosted glass panels over the terrace backdrop */
+  .glass {
+    @apply rounded-[22px] border border-white/70 bg-white/60 shadow-[0_8px_32px_rgb(70_55_40/0.08)] backdrop-blur-2xl;
+  }
+  .glass-strong {
+    @apply rounded-[18px] border border-white/80 bg-white/80 shadow-[0_4px_18px_rgb(70_55_40/0.07)] backdrop-blur-xl;
+  }
+  .pill-accent {
+    @apply bg-gradient-to-r from-accent-2 to-accent text-white shadow-[0_6px_18px_rgb(124_92_240/0.35)] hover:brightness-105;
+  }
+  .eyebrow-wide {
+    @apply text-[10.5px] font-medium tracking-[0.42em] text-ink-2 uppercase;
+  }
+  .card {
+    @apply rounded-[18px] border border-white/80 bg-white/75 shadow-[0_4px_18px_rgb(70_55_40/0.07)] backdrop-blur-xl;
+  }
+  .label {
+    @apply text-[12px] font-medium text-ink-2;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+  .field {
+    @apply h-9 w-full rounded-lg border border-line bg-field px-3 text-[13px] text-ink outline-none transition placeholder:text-faint focus:border-accent focus:ring-3 focus:ring-accent-soft;
+  }
+  textarea.field {
+    @apply h-auto py-2 leading-relaxed;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+}
+
+@keyframes drawer-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.animate-drawer { animation: drawer-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.animate-fade { animation: fade-in 180ms ease-out; }
+.animate-rise { animation: rise-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drawer, .animate-fade, .animate-rise { animation: none; }
+}
+
+/* Keep map attribution legible but unobtrusive on small cards */
+.leaflet-control-attribution {
+  font-size: 8px !important;
+  background: rgb(255 255 255 / 0.6) !important;
+}
+
+/* Washed-out map tiles so maps sit quietly inside glass cards */
+.soft-tiles {
+  filter: saturate(0.55) brightness(1.06) contrast(0.92);
+}
