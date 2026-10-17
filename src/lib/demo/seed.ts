@@ -459,7 +459,7 @@ export function createSeed(): Store {
     subtitle,
     summary,
     layout: (["full_width", "two_column", "grid", "collage", "full_width", "grid"] as const)[i],
-    widget: i === 0 ? { type: "weather", settings: { temp: 24, label: "Sunny skies", placeName: "Santorini" } } : i === 1 ? { type: "map", settings: { placeName: "Oia, Santorini", lat: 36.4618, lng: 25.3753, level: "region", detail: "country", showInset: true, parts: { city: "Oia", region: "South Aegean", country: "Greece", countryCode: "GR" } } } : undefined,
+    widget: i === 0 ? { type: "weather", settings: { placeName: "Santorini", lat: 36.4618, lng: 25.3753, date: "2024-06-10", layout: "moment", hour: 15, style: "photo" } } : i === 1 ? { type: "map", settings: { placeName: "Oia, Santorini", lat: 36.4618, lng: 25.3753, level: "region", detail: "country", showInset: true, parts: { city: "Oia", region: "South Aegean", country: "Greece", countryCode: "GR" } } } : undefined,
     assetIds: ids,
   }));
   sections.push(

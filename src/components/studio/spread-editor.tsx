@@ -29,6 +29,7 @@ import { Modal } from "@/components/modal";
 import { StudioHeader } from "@/components/studio/studio-header";
 import { StyleSwatch, WIDGET_TYPES, WidgetView, type WidgetStyle } from "@/components/studio/widgets";
 import { MapInspector } from "@/components/studio/map-inspector";
+import { WeatherInspector } from "@/components/studio/weather-inspector";
 import type { Asset, Place, Spread, SpreadElement, Story, StorySection, WidgetType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -746,11 +747,17 @@ function ElementInspector({
 }) {
   const title = { photo: "Photo", heading: "Heading", text: "Text", quote: "Quote", widget: "Widget" }[el.type];
   const settings = el.widget?.settings ?? {};
-  const patchW = (p: Record<string, unknown>) => el.widget && onChange({ widget: { ...el.widget, settings: { ...settings, ...p } } });
+  // Settings patch, plus an optional size change (kept on the spread).
+  const patchW = (p: Record<string, unknown>, size?: Partial<SpreadElement>) => {
+    if (!el.widget) return;
+    const box = size?.w != null && size?.h != null ? { w: size.w, h: size.h, x: Math.min(el.x, 100 - size.w), y: Math.min(el.y, 100 - size.h) } : {};
+    onChange({ widget: { ...el.widget, settings: { ...settings, ...p } }, ...box });
+  };
   const setW = (k: string, v: unknown) => patchW({ [k]: v });
   // Trip places first: ones tagged on this section's photos, then the rest of the project.
   const used = new Set(sectionPhotos.map((a) => a.placeId));
   const tripPlaces = [...places].sort((a, b) => Number(used.has(b.id)) - Number(used.has(a.id))).slice(0, 8);
+  const tripDates = [...new Set(sectionPhotos.map((a) => a.takenAt?.slice(0, 10)).filter((d): d is string => !!d && /^\d{4}-\d{2}-\d{2}$/.test(d)))].sort().slice(0, 8);
   return (
     <div className="space-y-5">
       <div className="text-[14px] font-semibold">{el.type === "widget" ? `${WIDGET_TYPES.find((w) => w.type === el.widget?.type)?.label} widget` : title}</div>
@@ -782,16 +789,12 @@ function ElementInspector({
         <>
           {el.widget.type === "map" ? (
             <MapInspector key={el.id} settings={settings} onPatch={patchW} places={tripPlaces} />
+          ) : el.widget.type === "weather" ? (
+            <WeatherInspector key={el.id} settings={settings} onPatch={patchW} places={tripPlaces} tripDates={tripDates} />
           ) : (
             <div className="h-24 rounded-xl bg-gradient-to-br from-sky-100 to-amber-50 p-3">
               <WidgetView type={el.widget.type} settings={settings} />
             </div>
-          )}
-          {el.widget.type === "weather" && (
-            <label className="block">
-              <span className="label mb-1.5 block">Destination</span>
-              <input className="field" defaultValue={String(settings.placeName ?? "")} placeholder="Santorini, Greece" onBlur={(e) => setW("placeName", e.target.value)} />
-            </label>
           )}
           {el.widget.type === "quote" && (
             <label className="block">
@@ -817,22 +820,6 @@ function ElementInspector({
               ))}
             </div>
           </div>
-          {el.widget.type === "weather" && (
-          <div>
-            <span className="label mb-1.5 block">Show elements</span>
-            {(
-              [
-                ["showLocation", "Location name"],
-                ["showDescription", "Condition text"],
-              ] as const
-            ).map(([k, label]) => (
-              <label key={k} className="flex items-center justify-between py-1 text-[12.5px]">
-                {label}
-                <input type="checkbox" className="accent-[var(--color-accent)]" checked={settings[k] !== false} onChange={(e) => setW(k, e.target.checked)} />
-              </label>
-            ))}
-          </div>
-          )}
         </>
       )}
 

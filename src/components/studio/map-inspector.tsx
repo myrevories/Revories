@@ -185,7 +185,7 @@ function LookSwatch({ look }: { look: MapSettings["look"] }) {
   );
 }
 
-function PlaceSearch({ onPick }: { onPick: (r: GeoResult) => void }) {
+export function PlaceSearch({ onPick }: { onPick: (r: GeoResult) => void }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<GeoResult[]>([]);
   const [open, setOpen] = useState(false);

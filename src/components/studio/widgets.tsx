@@ -1,5 +1,7 @@
 import { Camera, Landmark, Quote, Sun } from "lucide-react";
 import { MapWidget } from "@/components/studio/map-widget";
+import { WeatherWidget } from "@/components/studio/weather-widget";
+import type { WeatherSettings } from "@/lib/weather";
 import type { MapSettings } from "@/lib/map-widget";
 import type { WidgetType } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -32,24 +34,12 @@ export function WidgetView({
   className?: string;
 }) {
   const style = (settings.style as WidgetStyle) ?? "minimal";
-  const place = (settings.placeName as string) ?? "Santorini";
   // Maps run edge to edge; their label floats over the map.
-  const base = cn("flex size-full flex-col justify-center rounded-xl shadow-sm", type === "map" ? "p-0" : "p-3", styleClass[style], className);
+  const base = cn("flex size-full flex-col justify-center rounded-xl shadow-sm", type === "map" || type === "weather" ? "p-0" : "p-3", styleClass[style], className);
 
   switch (type) {
     case "weather":
-      return (
-        <div className={base}>
-          <div className="flex items-center gap-2">
-            <Sun className="size-7 shrink-0 text-amber-400" />
-            <div>
-              <div className="text-[20px] leading-none font-semibold">{String(settings.temp ?? 24)}°</div>
-              {settings.showLocation !== false && <div className="text-[11px] font-medium">{place}</div>}
-              {settings.showDescription !== false && <div className="text-[10px] opacity-70">{String(settings.label ?? "Sunny skies")}</div>}
-            </div>
-          </div>
-        </div>
-      );
+      return <WeatherWidget settings={settings as WeatherSettings} className={base} />;
     case "map":
       return <MapWidget settings={settings as MapSettings} className={base} />;
     case "quote":
