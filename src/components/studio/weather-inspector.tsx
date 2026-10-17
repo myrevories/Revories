@@ -194,7 +194,7 @@ export function WeatherInspector({
         {(
           [
             ["showLocation", "Location name", true],
-            ["showDescription", "Condition text", true],
+            ["showDescription", "Condition text", false],
             ["showDate", "Date", true],
             ["showDetails", "Feels like, humidity, wind", false],
           ] as const

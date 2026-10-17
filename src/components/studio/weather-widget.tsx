@@ -120,7 +120,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
   const cols = layout === "hourly" ? points.length : layout === "days" ? (twoRows ? Math.ceil(dayCount / 2) : dayCount) : 1;
 
   // Size the type to fit the box: [width in em, height in em] of each layout's content.
-  const [emW, emH] = layout === "moment" ? [9.8, s.showDetails ? 12 : 10.7] : layout === "hourly" ? [cols * 3.1 + 2, 9] : twoRows ? [cols * 3.3 + 2, 18.8] : [cols * 3.3 + 2, 11];
+  const [emW, emH] = layout === "moment" ? [12, s.showDetails ? 12 : 10.8] : layout === "hourly" ? [cols * 3.8 + 2, 10.7] : twoRows ? [cols * 3.8 + 2, 21.6] : [cols * 3.8 + 2, 12.7];
   const inner: CSSProperties = { fontSize: `clamp(6px, min(calc(100cqw / ${emW}), calc(100cqh / ${emH})), 28px)` };
 
   const name = s.showLocation !== false ? (s.placeName ?? "Santorini") : "";
@@ -128,7 +128,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
 
   let body: React.ReactNode;
   if (!ready) {
-    body = <Moment name={name} sub="" temp={s.temp ?? 24} code={0} isDay label={s.showDescription !== false ? (s.label ?? "Sunny skies") : ""} hi={null} lo={null} details={null} />;
+    body = <Moment name={name} sub="" temp={s.temp ?? 24} code={0} isDay label={s.showDescription === true ? (s.label ?? "Sunny skies") : ""} hi={null} lo={null} details={null} />;
   } else if (loading) {
     body = <div className="grid size-full place-items-center text-[0.85em] opacity-60">Loading weather…</div>;
   } else if (!data || data.note === "future" || (!dayInfo && layout !== "days")) {
@@ -148,7 +148,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
         temp={toUnit(moment?.temp, unit)}
         code={moment?.code}
         isDay={moment?.isDay ?? true}
-        label={s.showDescription !== false ? condition(moment?.code).label : ""}
+        label={s.showDescription === true ? condition(moment?.code).label : ""}
         hi={toUnit(dayInfo?.hi, unit)}
         lo={toUnit(dayInfo?.lo, unit)}
         details={s.showDetails ? moment : null}
@@ -161,7 +161,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
         <Header
           left={name}
           leftSub={showDate ? dateLong(date) : ""}
-          right={s.showDescription !== false ? condition(dayInfo?.code).label : ""}
+          right={s.showDescription === true ? condition(dayInfo?.code).label : ""}
           rightSub={`H:${toUnit(dayInfo?.hi, unit)}° L:${toUnit(dayInfo?.lo, unit)}°`}
         />
         <div className="grid flex-1 items-center" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
@@ -170,7 +170,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
             return (
               <div key={h} className="flex flex-col items-center gap-[0.35em]">
                 <span className="text-[0.78em] font-medium opacity-75">{hourLabel(h)}</span>
-                <WxIcon code={x?.code} isDay={x?.isDay} className="size-[2.2em]" />
+                <WxIcon code={x?.code} isDay={x?.isDay} className="size-[3.3em]" />
                 <span className="text-[1em] font-semibold">{x ? `${toUnit(x.temp, unit)}°` : "–"}</span>
               </div>
             );
@@ -189,7 +189,7 @@ export function WeatherWidget({ settings: s, className }: { settings: WeatherSet
             <div key={d.date} className="flex flex-col items-center gap-[0.25em]">
               <span className="text-[0.78em] leading-none font-semibold">{weekday(d.date)}</span>
               <span className="text-[0.62em] leading-none opacity-60">{dateShort(d.date)}</span>
-              <WxIcon code={d.code} className="my-[0.1em] size-[2.2em]" />
+              <WxIcon code={d.code} className="my-[0.1em] size-[3.3em]" />
               <span className="text-[0.95em] leading-none font-semibold">{d.hi != null ? `${toUnit(d.hi, unit)}°` : "–"}</span>
               <span className="text-[0.78em] leading-none opacity-60">{d.lo != null ? `${toUnit(d.lo, unit)}°` : ""}</span>
             </div>
@@ -221,7 +221,7 @@ function Header({ left, leftSub, right, rightSub }: { left: string; leftSub: str
   return (
     <div className="mb-[0.45em] flex items-start justify-between gap-[0.6em] border-b border-current/15 pb-[0.4em] leading-tight">
       <div className="min-w-0">
-        {left && <div className="truncate text-[0.95em] font-semibold">{left}</div>}
+        {left && <div className="truncate text-[1.45em] leading-tight font-semibold">{left}</div>}
         {leftSub && <div className="truncate text-[0.7em] opacity-70">{leftSub}</div>}
       </div>
       <div className="shrink-0 text-right">
@@ -256,15 +256,15 @@ function Moment({
   unit?: "f" | "c";
 }) {
   return (
-    <div className="flex size-full flex-col justify-between leading-tight">
+    <div className="relative flex size-full flex-col justify-between leading-tight">
+      <div className="pointer-events-none absolute top-1/2 right-0 -translate-y-[45%]">
+        <WxIcon code={code} isDay={isDay} className="size-[5.4em]" />
+      </div>
       <div className="min-w-0">
-        {name && <div className="truncate text-[1.05em] font-semibold">{name}</div>}
-        {sub && <div className="truncate text-[0.72em] opacity-75">{sub}</div>}
+        {name && <div className="truncate pr-[3.4em] text-[1.6em] leading-tight font-semibold">{name}</div>}
+        {sub && <div className="truncate pr-[6.5em] text-[0.72em] opacity-75">{sub}</div>}
       </div>
-      <div className="flex items-center justify-between gap-[0.4em]">
-        <div className="text-[3.1em] leading-none font-light tracking-tight">{temp != null ? `${temp}°` : "–"}</div>
-        <WxIcon code={code} isDay={isDay} className="-my-[0.3em] size-[3.6em]" />
-      </div>
+      <div className="text-[3.1em] leading-none font-light tracking-tight">{temp != null ? `${temp}°` : "–"}</div>
       <div className="min-w-0">
         {label && <div className="truncate text-[0.9em] font-medium">{label}</div>}
         {hi != null && lo != null && <div className="text-[0.75em] opacity-75">H:{hi}° L:{lo}°</div>}
